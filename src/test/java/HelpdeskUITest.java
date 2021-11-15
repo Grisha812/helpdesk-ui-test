@@ -1,44 +1,53 @@
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Action;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.AbstractPage;
 import pages.LoginPage;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
-public class HelpdeskUITest {
 
-    private WebDriver driver;
+public class HelpdeskUITest   {
 
-    @Before
-    public void setup() throws IOException {
-        // Читаем конфигурационный файл в System.properties
-        System.getProperties().load(ClassLoader.getSystemResourceAsStream("config.properties"));
-        // Создание экземпляра драйвера
-        driver = new ChromeDriver();
-        // Устанавливаем размер окна браузера, как максимально возможный
-        driver.manage().window().maximize();
-        // Установим время ожидания для поиска элементов
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        // Установить созданный драйвер для поиска в веб-страницах
-        AbstractPage.setDriver(driver);
+    WebDriver webDriver;
+    WebDriverWait webDriverWait;
+
+    @BeforeAll
+    public static void startBrowser() {
+        WebDriverManager.chromedriver().setup();
+    }
+    @BeforeEach
+            void setupBrowser() throws IOException {
+        System.getProperties().load(ClassLoader.getSystemResourceAsStream("user.properties"));
+        webDriver = new ChromeDriver();
+        webDriver.manage().window().maximize();
+        webDriverWait = new WebDriverWait(webDriver, 10);
     }
 
     @Test
+    @DisplayName("Тупо открываем стартовую страницу")
     public void createTicketTest() {
-        driver.get(System.getProperty("site.url"));
-
-        // ...
-
-        // todo: чтение данных учетной записи пользователя из user.properties в System.properties
-        LoginPage loginPage = new LoginPage();
-        loginPage.login(System.getProperty("user"), System.getProperty("password"));
-
-        // ...
-
-        //Закрываем текущее окно браузера
-        driver.close();
+        webDriver.get("https://at-sandbox.workbench.lanit.ru/");
+        webDriver.close();
     }
+
+    @Test
+    @DisplayName("Логинимся")
+    public void loginTest() {
+
+        webDriver.get("https://at-sandbox.workbench.lanit.ru/login/?next=/");
+        new LoginPage(webDriver)
+        .loginClick();
+        webDriver.quit();
+    }
+
 }

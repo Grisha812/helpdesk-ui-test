@@ -1,13 +1,21 @@
 package pages;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-// Элементы общие для всех страниц
-public abstract class AbstractPage {
 
-    protected static WebDriver driver;
+public class AbstractPage {
 
-    public static void setDriver(WebDriver webDriver) {
-        driver = webDriver;
+    WebDriver webDriver;
+    WebDriverWait webDriverWait;
+
+
+    public AbstractPage(WebDriver webDriver) {
+
+        this.webDriver = webDriver;
+        webDriverWait = new WebDriverWait(webDriver, 10);
+        PageFactory.initElements(webDriver, this);
     }
+
 }
