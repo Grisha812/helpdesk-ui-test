@@ -1,4 +1,5 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.assertj.core.internal.bytebuddy.build.Plugin;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,19 +27,19 @@ public class HelpdeskUITest   {
         WebDriverManager.chromedriver().setup();
     }
     @BeforeEach
-            void setupBrowser() throws IOException {
-        System.getProperties().load(ClassLoader.getSystemResourceAsStream("user.properties"));
+            void setupBrowser()  {
+
         webDriver = new ChromeDriver();
         webDriver.manage().window().maximize();
         webDriverWait = new WebDriverWait(webDriver, 10);
     }
 
-    @Test
+    /*@Test
     @DisplayName("Тупо открываем стартовую страницу")
     public void createTicketTest() {
         webDriver.get("https://at-sandbox.workbench.lanit.ru/");
-        webDriver.close();
-    }
+        webDriver.quit();
+    }*/
 
     @Test
     @DisplayName("Логинимся")
