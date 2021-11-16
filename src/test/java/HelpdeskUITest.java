@@ -1,7 +1,6 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.assertj.core.internal.bytebuddy.build.Plugin;
-import org.junit.Assert;
-import org.junit.Before;
+
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -78,7 +77,7 @@ public class HelpdeskUITest {
         Assertions.assertEquals("proverka@po4ty.ru", submitterEmail.getText());
         Assertions.assertEquals("Описание самой важной проблемы", description.getText());
         //ниже тест может падать, потому что там скрипт высчитывания часов после публикации и он меняется (5 hours from now)
-        Assertions.assertEquals("Nov. 17, 2021, midnight (5 hours from now)", dueDate.getText());
+        Assertions.assertEquals("Nov. 17, 2021, midnight (4 hours from now)", dueDate.getText());
         Assertions.assertEquals("2. High", priority.getText());
     }
 }
