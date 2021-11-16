@@ -1,19 +1,16 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.assertj.core.internal.bytebuddy.build.Plugin;
+import io.qameta.allure.Attachment;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pages.AbstractPage;
 import pages.LoginPage;
 import pages.MainPage;
 import pages.TicketsPage;
 
-import java.io.IOException;
-import java.util.List;
+
 
 public class HelpdeskUITest {
 
@@ -80,4 +77,8 @@ public class HelpdeskUITest {
         Assertions.assertEquals("Nov. 17, 2021, midnight (4 hours from now)", dueDate.getText());
         Assertions.assertEquals("2. High", priority.getText());
     }
+   /* @Attachment (value = "Скриншот", type = "image/png")
+    public byte[] saveScreenshot(byte[] screenShot) {
+        return screenShot;
+    }*/
 }
