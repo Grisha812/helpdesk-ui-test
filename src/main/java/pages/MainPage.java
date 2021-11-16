@@ -32,7 +32,6 @@ public class MainPage extends AbstractPage {
     @FindBy(xpath = "//option[contains(text(),'2. High')]")
     public WebElement highPriority;
 
-
     public void fillTicketFields(String summary, String description, String email) {
         queueID.click();
         django.click();

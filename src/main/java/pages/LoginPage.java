@@ -21,7 +21,6 @@ public class LoginPage extends AbstractPage {
     @FindBy(xpath = "//input[@value='Login']")
     public WebElement submitInput;
 
-
     public void inputLog(String name) {
         userName.sendKeys(name);
     }

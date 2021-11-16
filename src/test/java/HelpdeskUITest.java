@@ -1,6 +1,5 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.assertj.core.internal.bytebuddy.build.Plugin;
-
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -12,9 +11,9 @@ import pages.AbstractPage;
 import pages.LoginPage;
 import pages.MainPage;
 import pages.TicketsPage;
+
 import java.io.IOException;
 import java.util.List;
-
 
 public class HelpdeskUITest {
 
@@ -33,8 +32,9 @@ public class HelpdeskUITest {
         webDriver.manage().window().maximize();
         webDriverWait = new WebDriverWait(webDriver, 10);
     }
+
     @AfterEach
-    void tearFall (){
+    void tearFall() {
         webDriver.quit();
     }
 
