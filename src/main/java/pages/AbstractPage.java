@@ -11,11 +11,14 @@ public class AbstractPage {
     WebDriverWait webDriverWait;
 
 
-    public AbstractPage(WebDriver webDriver) {
+
+    public AbstractPage(WebDriver webDriver, WebDriverWait webDriverWait) {
 
         this.webDriver = webDriver;
-        webDriverWait = new WebDriverWait(webDriver, 10);
+        this.webDriverWait = new WebDriverWait(webDriver, 10);
         PageFactory.initElements(webDriver, this);
     }
+
+
 
 }
