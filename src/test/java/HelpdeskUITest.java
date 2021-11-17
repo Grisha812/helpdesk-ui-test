@@ -1,18 +1,18 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.Attachment;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.LoginPage;
 import pages.MainPage;
 import pages.TicketsPage;
 
+import static org.openqa.selenium.logging.LogType.DRIVER;
 
 
 public class HelpdeskUITest {
+
 
     WebDriver webDriver;
     WebDriverWait webDriverWait;
@@ -24,16 +24,11 @@ public class HelpdeskUITest {
 
     @BeforeEach
     void setupBrowser() {
-
         webDriver = new ChromeDriver();
         webDriver.manage().window().maximize();
         webDriverWait = new WebDriverWait(webDriver, 10);
     }
 
-    @AfterEach
-    void tearFall() {
-        webDriver.quit();
-    }
 
     @Test
     @Order(1)
@@ -55,6 +50,7 @@ public class HelpdeskUITest {
         loginPage.inputPass("adminat");
         TicketsPage ticketsPage = new TicketsPage(webDriver, webDriverWait);
         ticketsPage.searchTicket("Очень важная проблема");
+
     }
 
     @Test
@@ -70,15 +66,18 @@ public class HelpdeskUITest {
         WebElement dueDate = webDriver.findElement(By.xpath("//td[contains(text(),'Nov. 17, 2021')]"));
         WebElement priority = webDriver.findElement(By.xpath("//td[contains(text(),'2. High')]"));
         //ниже написал 4 проверки, надеюсь, хватит, рутина =)
-
         Assertions.assertEquals("proverka@po4ty.ru", submitterEmail.getText());
         Assertions.assertEquals("Описание самой важной проблемы", description.getText());
         //ниже тест может падать, потому что там скрипт высчитывания часов после публикации и он меняется (5 hours from now)
         Assertions.assertEquals("Nov. 17, 2021, midnight (4 hours from now)", dueDate.getText());
         Assertions.assertEquals("2. High", priority.getText());
     }
-   /* @Attachment (value = "Скриншот", type = "image/png")
-    public byte[] saveScreenshot(byte[] screenShot) {
-        return screenShot;
-    }*/
+    @Attachment(value = "Attachment Screenshot", type = "image/png")
+    public byte[] makeScreenshot() {
+        return ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.BYTES);
+    }
+    @AfterEach
+    public void onTestFailure() {
+        makeScreenshot();
+    }
 }
