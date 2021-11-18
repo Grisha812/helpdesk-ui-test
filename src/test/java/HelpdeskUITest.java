@@ -8,6 +8,9 @@ import pages.LoginPage;
 import pages.MainPage;
 import pages.TicketsPage;
 
+import java.io.IOException;
+import java.util.Properties;
+
 import static org.openqa.selenium.logging.LogType.DRIVER;
 
 
@@ -43,11 +46,15 @@ public class HelpdeskUITest {
     @Test
     @Order(2)
     @DisplayName("Логинимся и ищем наш тикет")
-    public void loginTest() {
+    public void loginTest() throws IOException {
+        Properties property = new Properties();
+        System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
+        String login = System.getProperty("login");
+        String password = System.getProperty("password");
         webDriver.get("https://at-sandbox.workbench.lanit.ru/login/?next=/");
         LoginPage loginPage = new LoginPage(webDriver, webDriverWait);
-        loginPage.inputLog("admin");
-        loginPage.inputPass("adminat");
+        loginPage.inputLog(System.getProperty(login));
+        loginPage.inputPass(System.getProperty(password));
         TicketsPage ticketsPage = new TicketsPage(webDriver, webDriverWait);
         ticketsPage.searchTicket("Очень важная проблема");
 
@@ -68,16 +75,21 @@ public class HelpdeskUITest {
         //ниже написал 4 проверки, надеюсь, хватит, рутина =)
         Assertions.assertEquals("proverka@po4ty.ru", submitterEmail.getText());
         Assertions.assertEquals("Описание самой важной проблемы", description.getText());
-        //ниже тест может падать, потому что там скрипт высчитывания часов после публикации и он меняется (5 hours from now)
-        Assertions.assertEquals("Nov. 17, 2021, midnight (4 hours from now)", dueDate.getText());
+        Assertions.assertTrue(dueDate.getText().contains("Nov. 17, 2021, midnight"));
         Assertions.assertEquals("2. High", priority.getText());
     }
+
     @Attachment(value = "Attachment Screenshot", type = "image/png")
     public byte[] makeScreenshot() {
         return ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.BYTES);
     }
+
     @AfterEach
     public void onTestFailure() {
         makeScreenshot();
+    }
+    @AfterEach
+    public void tearsFall(){
+        webDriver.quit();
     }
 }
