@@ -1,3 +1,4 @@
+import ch.qos.logback.core.joran.event.BodyEvent;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.Attachment;
 import org.junit.jupiter.api.*;
@@ -9,13 +10,11 @@ import pages.MainPage;
 import pages.TicketsPage;
 
 import java.io.IOException;
-import java.util.Properties;
 
-import static org.openqa.selenium.logging.LogType.DRIVER;
+import static pages.LoginPage.*;
 
 
 public class HelpdeskUITest {
-
 
     WebDriver webDriver;
     WebDriverWait webDriverWait;
@@ -32,7 +31,6 @@ public class HelpdeskUITest {
         webDriverWait = new WebDriverWait(webDriver, 10);
     }
 
-
     @Test
     @Order(1)
     @DisplayName("Заполняем поля тикета")
@@ -47,14 +45,11 @@ public class HelpdeskUITest {
     @Order(2)
     @DisplayName("Логинимся и ищем наш тикет")
     public void loginTest() throws IOException {
-        Properties property = new Properties();
-        System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
-        String login = System.getProperty("login");
-        String password = System.getProperty("password");
-        webDriver.get("https://at-sandbox.workbench.lanit.ru/login/?next=/");
         LoginPage loginPage = new LoginPage(webDriver, webDriverWait);
-        loginPage.inputLog(System.getProperty(login));
-        loginPage.inputPass(System.getProperty(password));
+        System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
+        webDriver.get("https://at-sandbox.workbench.lanit.ru/login/?next=/");
+        loginPage.inputLog(System.getProperty("login"));
+        loginPage.inputPass(System.getProperty("password"));
         TicketsPage ticketsPage = new TicketsPage(webDriver, webDriverWait);
         ticketsPage.searchTicket("Очень важная проблема");
 
@@ -63,16 +58,12 @@ public class HelpdeskUITest {
     @Test
     @Order(3)
     @DisplayName("Проверяем введённую инфу в тикете")
-    public void checkTicketTest() {
+    public void checkTicketTest() throws IOException {
+        System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
         webDriver.get("https://at-sandbox.workbench.lanit.ru/tickets/382/");
         LoginPage loginPage = new LoginPage(webDriver, webDriverWait);
-        loginPage.inputLog("admin");
-        loginPage.inputPass("adminat");
-        WebElement description = webDriver.findElement(By.cssSelector("td[id='ticket-description'] p"));
-        WebElement submitterEmail = webDriver.findElement(By.xpath("//tbody/tr[2]/td[2]"));
-        WebElement dueDate = webDriver.findElement(By.xpath("//td[contains(text(),'Nov. 17, 2021')]"));
-        WebElement priority = webDriver.findElement(By.xpath("//td[contains(text(),'2. High')]"));
-        //ниже написал 4 проверки, надеюсь, хватит, рутина =)
+        loginPage.inputLog(System.getProperty("login"));
+        loginPage.inputPass(System.getProperty("password"));
         Assertions.assertEquals("proverka@po4ty.ru", submitterEmail.getText());
         Assertions.assertEquals("Описание самой важной проблемы", description.getText());
         Assertions.assertTrue(dueDate.getText().contains("Nov. 17, 2021, midnight"));
@@ -88,8 +79,9 @@ public class HelpdeskUITest {
     public void onTestFailure() {
         makeScreenshot();
     }
+
     @AfterEach
-    public void tearsFall(){
+    public void tearsFall() {
         webDriver.quit();
     }
 }
