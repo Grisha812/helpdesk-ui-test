@@ -1,9 +1,11 @@
 import ch.qos.logback.core.joran.event.BodyEvent;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.Attachment;
+import org.junit.After;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.LoginPage;
 import pages.MainPage;
@@ -22,6 +24,8 @@ public class HelpdeskUITest {
     @BeforeAll
     public static void startBrowser() {
         WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--incognito");
     }
 
     @BeforeEach
@@ -29,45 +33,70 @@ public class HelpdeskUITest {
         webDriver = new ChromeDriver();
         webDriver.manage().window().maximize();
         webDriverWait = new WebDriverWait(webDriver, 10);
+        Assertions.assertDoesNotThrow( ()-> webDriver.navigate().to("https://www.vstu.ru"),
+                "Сайт VSTU недоступен! Всё пропало! ");
     }
 
     @Test
     @Order(1)
-    @DisplayName("Заполняем поля тикета")
+    @DisplayName("Переход по вкладкам сайта")
     public void fillTicketFieldsTest() {
-        webDriver.get("https://at-sandbox.workbench.lanit.ru");
+        webDriver.get("https://www.vstu.ru");
         MainPage mainPage = new MainPage(webDriver, webDriverWait);
-        mainPage.fillTicketFields("Очень важная проблема", "Описание самой важной проблемы", "proverka@po4ty.ru");
+        mainPage.checkNamesTitle();
 
+        String title = webDriver.getTitle();
+
+        Assertions.assertEquals("Университет сегодня", mainPage.getTextUniverTitle());
+        Assertions.assertEquals("Образование в ВолгГТУ", mainPage.getTextObrazTitle());
+        Assertions.assertEquals("Наука в ВолгГТУ", mainPage.getTextNaukaTitle());
+        Assertions.assertEquals("Вопросы перспективного развития", mainPage.getTextRazvitTitle());
+        Assertions.assertEquals("Сотрудничество", mainPage.getTextSouzTitle());
+        Assertions.assertEquals("Справочник", mainPage.getTextSpravkaTitle());
+
+        return;
     }
 
     @Test
     @Order(2)
-    @DisplayName("Логинимся и ищем наш тикет")
-    public void loginTest() throws IOException {
+    @DisplayName("Авторизация в файловом хранилище")
+    public void loginTest() throws IOException, InterruptedException {
         LoginPage loginPage = new LoginPage(webDriver, webDriverWait);
         System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
-        webDriver.get("https://at-sandbox.workbench.lanit.ru/login/?next=/");
+        webDriver.get("https://www.vstu.ru");
+
         loginPage.inputLog(System.getProperty("login"));
         loginPage.inputPass(System.getProperty("password"));
-        TicketsPage ticketsPage = new TicketsPage(webDriver, webDriverWait);
-        ticketsPage.searchTicket("Очень важная проблема");
+
+        /*String loginValue = "fpik";
+        String passValue = "guest";
+        loginPage.auth(loginValue, passValue);*/
+
+        String title = webDriver.getTitle();
+
+        Assertions.assertEquals(title, "Главная страница | Файловое хранилище ВолгГТУ");
+
+        String result = webDriver.findElement(By.xpath("//input[@id='edit-name']")).getText();
+        Assertions.assertEquals("", result);
 
     }
 
     @Test
     @Order(3)
-    @DisplayName("Проверяем введённую инфу в тикете")
+    @DisplayName("Проверка поисковой выдачи")
     public void checkTicketTest() throws IOException {
         System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
-        webDriver.get("https://at-sandbox.workbench.lanit.ru/tickets/382/");
-        LoginPage loginPage = new LoginPage(webDriver, webDriverWait);
-        loginPage.inputLog(System.getProperty("login"));
-        loginPage.inputPass(System.getProperty("password"));
-        Assertions.assertEquals("proverka@po4ty.ru", submitterEmail.getText());
-        Assertions.assertEquals("Описание самой важной проблемы", description.getText());
-        Assertions.assertTrue(dueDate.getText().contains("Nov. 17, 2021, midnight"));
-        Assertions.assertEquals("2. High", priority.getText());
+        webDriver.get("https://www.vstu.ru");
+        TicketsPage ticketsPage = new TicketsPage(webDriver, webDriverWait);
+
+        String inputSearch = "тестирование";
+        ticketsPage.searchTicket(inputSearch);
+    }
+
+    @After
+    public void tearDown(){
+        webDriver.close();
+        webDriver.quit();
     }
 
     @Attachment(value = "Attachment Screenshot", type = "image/png")

@@ -11,17 +11,16 @@ public class TicketsPage extends AbstractPage {
         super(webDriver, webDriverWait);
     }
 
-    @FindBy(xpath = "//input[@id='search_query']")
-    public WebElement searchField;
-    @FindBy(xpath = "//button[@class='btn btn-primary']")
-    public WebElement searchGo;
-    @FindBy(linkText = "382. Очень важная проблема")
-    public WebElement searchResult;
-    @FindBy(xpath = "//td[contains(text(),'Nov. 17, 2021, midnight (7 hours from now)')]")
-    public WebElement DueDate;
 
-    public void searchTicket(String search) {
-        searchField.sendKeys(search);
-        searchGo.click();
+    @FindBy(xpath = "//span[@class='sb-icon-search']")
+    private WebElement search;
+
+    @FindBy(xpath = "//input[@id='search']")
+    private WebElement inputSearch;
+
+    public void searchTicket(String inputSearchValue) {
+        inputSearch.sendKeys(inputSearchValue);
+        inputSearch.submit();
+        return;
     }
 }
